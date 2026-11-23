@@ -1,0 +1,8 @@
+# Rust 1.100 moved Cargo build-script output to build/<pkg>/<hash>/out.
+# tauri-build 2.6.3 derives the target dir from the old build/<pkg>-<hash>/out
+# depth, so on 1.100 it copies resources/ into target/debug/build/ and the app
+# panics at startup looking for its tray icon. Drop this pin once tauri-build
+# is upgraded to a release that handles the new layout.
+[toolchain]
+channel = "1.99.0"
+components = ["rustfmt", "clippy"]
