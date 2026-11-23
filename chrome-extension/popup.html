@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Whispr Meeting Capture</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <img src="icons/32.png" alt="" width="20" height="20" />
+      <h1>Whispr Meeting Capture</h1>
+    </header>
+
+    <section id="setup" hidden>
+      <label for="token">Pairing token</label>
+      <input
+        id="token"
+        type="password"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Paste it from Whispr"
+      />
+      <p class="hint">
+        In Whispr, open Settings &gt; Advanced, turn on Meeting Capture, and
+        copy the pairing token.
+      </p>
+      <button id="save-token" class="primary">Save</button>
+    </section>
+
+    <section id="main" hidden>
+      <p id="connection" class="status"></p>
+
+      <div id="idle" hidden>
+        <p id="tab-title" class="title"></p>
+        <button id="start" class="primary">Record this tab</button>
+        <p id="mic-note" class="hint" hidden>
+          The microphone isn't allowed, so only the other participants would be
+          transcribed.
+          <button id="allow-mic" class="link">Allow the microphone</button>
+        </p>
+        <p class="hint">
+          Let everyone in the meeting know that it is being recorded.
+        </p>
+      </div>
+
+      <div id="recording" hidden>
+        <p class="status recording">
+          <span class="dot"></span>
+          <span>Recording</span>
+          <span id="elapsed"></span>
+        </p>
+        <p id="recording-title" class="title"></p>
+        <p id="no-mic" class="hint" hidden>
+          Recording without your microphone: only the other participants.
+        </p>
+        <p id="warning" class="hint warning" hidden></p>
+        <div class="row">
+          <button id="stop" class="primary">Stop and transcribe</button>
+          <button id="discard">Discard</button>
+        </div>
+      </div>
+
+      <p id="result" class="result" hidden></p>
+      <button id="change-token" class="link footer">
+        Change pairing token
+      </button>
+    </section>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

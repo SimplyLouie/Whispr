@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Whispr Meeting Capture",
+  "version": "0.1.0",
+  "description": "Sends a meeting tab's audio and your microphone to the Whispr app on this computer, which transcribes the meeting locally.",
+  "minimum_chrome_version": "116",
+  "permissions": ["tabCapture", "offscreen", "storage", "activeTab"],
+  "host_permissions": ["http://127.0.0.1/*"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Whispr Meeting Capture"
+  },
+  "icons": {
+    "32": "icons/32.png",
+    "128": "icons/128.png"
+  }
+}

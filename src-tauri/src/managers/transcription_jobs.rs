@@ -22,6 +22,7 @@ use crate::managers::history::{HistoryEntry, HistoryManager};
 use crate::managers::transcription::{
     panic_payload_message, ChunkControl, Transcription, TranscriptionManager,
 };
+use crate::meeting;
 use crate::notices::{self, Notice, NoticeCode, NoticeSource};
 
 /// How often a waiting chunk checks whether dictation has finished.
@@ -166,6 +167,12 @@ impl TranscriptionJobManager {
         self.queue(entry_id, true);
     }
 
+    /// Queues an entry that is already in History with its recording (a
+    /// meeting that just ended), behind any other file.
+    pub fn queue_recording(&self, entry_id: i64) {
+        self.queue(entry_id, false);
+    }
+
     /// Queues the entry to be transcribed from its recording, unless it
     /// already is.
     fn queue(&self, entry_id: i64, retry: bool) {
@@ -303,20 +310,26 @@ impl TranscriptionJobManager {
         let tm = Arc::clone(&self.app.state::<Arc<TranscriptionManager>>());
         let entry = tauri::async_runtime::block_on(hm.get_entry_by_id(entry_id))?
             .ok_or_else(|| anyhow!("History entry {} not found", entry_id))?;
-        let samples = read_wav_samples(hm.get_audio_file_path(&entry.file_name))
-            .map_err(|e| anyhow!("Failed to load audio: {}", e))?;
-        if samples.is_empty() {
-            return Err(anyhow!("Recording has no audio samples"));
-        }
-
+        let recording = hm.get_audio_file_path(&entry.file_name);
         let control = Control {
             manager: self,
             entry_id: entry.id,
             cancelled,
             percent: Cell::new(0),
         };
-        let Some(Transcription { text, language }) = tm.transcribe_in_chunks(samples, &control)?
-        else {
+        // A meeting has a channel per side of the conversation, and its
+        // transcript says who spoke.
+        let transcription = if meeting::transcript::is_meeting_recording(&recording) {
+            meeting::transcript::transcribe(&self.app, &tm, &recording, &control)?
+        } else {
+            let samples =
+                read_wav_samples(&recording).map_err(|e| anyhow!("Failed to load audio: {}", e))?;
+            if samples.is_empty() {
+                return Err(anyhow!("Recording has no audio samples"));
+            }
+            tm.transcribe_in_chunks(samples, &control)?
+        };
+        let Some(Transcription { text, language }) = transcription else {
             return Ok(JobEnd::Cancelled);
         };
         if text.is_empty() {

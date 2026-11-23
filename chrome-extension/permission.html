@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Allow the microphone - Whispr Meeting Capture</title>
+    <link rel="stylesheet" href="popup.css" />
+    <style>
+      body {
+        width: auto;
+        max-width: 460px;
+        margin: 64px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="icons/32.png" alt="" width="20" height="20" />
+      <h1>Whispr Meeting Capture</h1>
+    </header>
+    <p>
+      To transcribe what you say in a meeting, the extension records your
+      microphone next to the meeting tab. Chrome asks for that once, here.
+    </p>
+    <p id="outcome" class="status"></p>
+    <button id="allow" class="primary">Allow the microphone</button>
+    <script type="module" src="permission.js"></script>
+  </body>
+</html>

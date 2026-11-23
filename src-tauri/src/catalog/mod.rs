@@ -604,7 +604,7 @@ mod tests {
         };
         assert!(
             parse(&ROOT.transcribe_cpp) <= parse(engine),
-            "catalog built for transcribe.cpp {} but Handy links {}",
+            "catalog built for transcribe.cpp {} but Whispr links {}",
             ROOT.transcribe_cpp,
             engine
         );
@@ -612,7 +612,7 @@ mod tests {
             if let Some(min) = &m.min_engine {
                 assert!(
                     parse(min) <= parse(engine),
-                    "{} needs transcribe.cpp {min}, Handy links {engine}",
+                    "{} needs transcribe.cpp {min}, Whispr links {engine}",
                     m.id
                 );
             }

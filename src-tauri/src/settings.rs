@@ -572,6 +572,14 @@ pub struct AppSettings {
     /// `overlay_position` (position `none` → style `None`).
     #[serde(default = "default_overlay_style")]
     pub overlay_style: OverlayStyle,
+    /// Whether the loopback endpoint the browser extension sends meeting
+    /// audio to is listening. Off until the user turns it on.
+    #[serde(default)]
+    pub meeting_capture_enabled: bool,
+    /// The secret the browser extension presents with every request. Empty
+    /// until meeting capture is first turned on.
+    #[serde(default)]
+    pub meeting_capture_token: String,
 }
 
 fn default_model() -> String {
@@ -1076,6 +1084,8 @@ pub fn get_default_settings() -> AppSettings {
         language_detection: LanguageDetectionMode::default(),
         language_detection_window_secs: default_language_detection_window_secs(),
         overlay_style: default_overlay_style(),
+        meeting_capture_enabled: false,
+        meeting_capture_token: String::new(),
     }
 }
 

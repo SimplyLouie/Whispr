@@ -39,7 +39,11 @@ const SPEECH_PAD_SAMPLES: usize = 30 * RATE / 1000;
 /// Speech segments, in samples, from per-frame speech probabilities: Silero's
 /// `get_speech_timestamps` without a maximum speech length. `samples` is the
 /// length of the audio the probabilities score.
-fn speech_segments(probs: &[f32], frame_samples: usize, samples: usize) -> Vec<Range<usize>> {
+pub(crate) fn speech_segments(
+    probs: &[f32],
+    frame_samples: usize,
+    samples: usize,
+) -> Vec<Range<usize>> {
     let mut segments: Vec<Range<usize>> = Vec::new();
     let mut triggered = false;
     let mut start = 0;

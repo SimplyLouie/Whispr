@@ -1038,6 +1038,36 @@ async updateRecordingRetentionPeriod(period: string) : Promise<Result<null, stri
 }
 },
 /**
+ * Whether meeting capture is on and listening, its pairing token, and how
+ * much of a meeting in progress is recorded.
+ */
+async getMeetingCaptureStatus() : Promise<MeetingCaptureStatus> {
+    return await TAURI_INVOKE("get_meeting_capture_status");
+},
+/**
+ * Turns the endpoint the browser extension sends meetings to on or off.
+ * Turning it off finishes a meeting in progress.
+ */
+async setMeetingCaptureEnabled(enabled: boolean) : Promise<Result<MeetingCaptureStatus, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_meeting_capture_enabled", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Replaces the pairing token; the extension needs the new one afterwards.
+ */
+async regenerateMeetingCaptureToken() : Promise<Result<MeetingCaptureStatus, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("regenerate_meeting_capture_token") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
  * Checks if the Mac is a laptop by detecting battery presence
  * 
  * This uses pmset to check for battery information.
@@ -1185,7 +1215,17 @@ language_detection_window_secs?: number;
  * not gated on this — that follows model capability. Migrated from the old
  * `overlay_position` (position `none` → style `None`).
  */
-overlay_style?: OverlayStyle }
+overlay_style?: OverlayStyle; 
+/**
+ * Whether the loopback endpoint the browser extension sends meeting
+ * audio to is listening. Off until the user turns it on.
+ */
+meeting_capture_enabled?: boolean; 
+/**
+ * The secret the browser extension presents with every request. Empty
+ * until meeting capture is first turned on.
+ */
+meeting_capture_token?: string }
 export type AudioDevice = { index: string; name: string; is_default: boolean }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AutoUnavailableReason = 
@@ -1321,6 +1361,27 @@ export type LogLevel = "trace" | "debug" | "info" | "warn" | "error"
  * A macOS privacy permission Handy asks for during onboarding.
  */
 export type MacPermission = "accessibility" | "microphone"
+/**
+ * What the settings show about meeting capture.
+ */
+export type MeetingCaptureStatus = { enabled: boolean; 
+/**
+ * Whether the endpoint is accepting requests.
+ */
+listening: boolean; port: number; 
+/**
+ * The pairing token to enter in the extension; empty before meeting
+ * capture was ever turned on.
+ */
+token: string; 
+/**
+ * Why the endpoint isn't listening although it is enabled.
+ */
+error: string | null; 
+/**
+ * How much of the meeting in progress is recorded, if there is one.
+ */
+recording_seconds: number | null }
 export type ModelInfo = { id: string; name: string; description: string; filename: string; source: ModelSource; size_mb: number; is_downloaded: boolean; is_downloading: boolean; partial_size: number; accuracy_score: number; speed_score: number; supports_translation: boolean; is_recommended: boolean; supported_languages: string[]; supports_language_selection: boolean; is_custom: boolean; supports_streaming: boolean; supports_language_detection: boolean }
 export type ModelLoadStatus = { is_loaded: boolean; current_model: string | null }
 /**
